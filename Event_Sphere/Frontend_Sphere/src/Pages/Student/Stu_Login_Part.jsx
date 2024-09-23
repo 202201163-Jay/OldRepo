@@ -10,8 +10,8 @@ export const Stu_Login = () => {
       </div>
       <div className="flex flex-col items-center">
         <form className="w-full" onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full p-2 border rounded mb-4" type="text" placeholder="Your Email" required />
-          <input className="w-full p-2 border rounded mb-4" type="password" placeholder="Password" required />
+          <input className="w-full p-2 border rounded mb-4" type="text" placeholder="Enter Your Email" required />
+          <input className="w-full p-2 border rounded mb-4" type="password" placeholder="Enter Your Password" required />
           <div className='flex justify-center'>
             <button className="w-1/2 bg-green-500 text-white p-2 rounded hover:bg-green-600">Log In</button>
           </div>

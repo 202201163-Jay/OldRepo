@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-
-const app = express();
+const user = require("./routes/user");
+require("./config/database").connect()
+require("dotenv").config();
 
 const corsOptions = {
     origin: "http://localhost:5173",
@@ -9,25 +10,14 @@ const corsOptions = {
     credentials: true,
 };
 
+const app = express();
 app.use(cors(corsOptions));
-
-require("dotenv").config();
+app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-
-require("./config/database").connect()
-
-// route import and mount 
-const user = require("./routes/user");
-app.use("/api/v1", user);
-
-// Activate 
+app.use("/api/auth", user);
+ 
 app.listen(PORT, () => {
     console.log("Server Run at ", PORT);
-})
-
-app.get("/", (req, res) => {
-    res.send("<h1>Auth App</h1>")
 })

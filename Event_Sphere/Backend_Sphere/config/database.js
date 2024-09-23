@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 require("dotenv").config();
 
 exports.connect = () => {
-    const MONGO_URI = process.env.MONGO_URI;
-    if (!MONGO_URI) {
+    const URI = "mongodb+srv://Smit_Godhani:3QUbIeh4qOCEGSwV@cluster0.bfkfp.mongodb.net/Event_Sphere"
+    if (!URI) {
         console.log("MongoDB connection string not found in environment variables");
         process.exit(1);
     }
 
-    mongoose.connect(MONGO_URI, {
+    mongoose.connect(URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
