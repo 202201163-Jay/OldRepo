@@ -1,16 +1,15 @@
 const bcrypt = require('bcrypt');
 const User = require("../Models/User");
+const College = require('../Models/College');
+const CollegeRep = require("../Models/CollegeRep")
 const jwt = require("jsonwebtoken")
 
 require("dotenv").config()
 
-// Sign up route handler
-exports.signup = async (req, res) => {
+exports.student_register = async (req, res) => {
     try {
-        // get data
-        const { name, email, password, role } = req.body;
+        const { name, email, password} = req.body;
 
-        // check if user already exist 
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
@@ -20,7 +19,6 @@ exports.signup = async (req, res) => {
             })
         }
 
-        // Secured password 
         let hashedPassword;
         try {
             hashedPassword = await bcrypt.hash(password, 10);
@@ -32,9 +30,8 @@ exports.signup = async (req, res) => {
             })
         }
 
-        // Create Entry for User
         let user = await User.create({
-            name,email,password:hashedPassword,role
+            name,email,password:hashedPassword
         });
 
         return res.status(200).json({
@@ -51,6 +48,76 @@ exports.signup = async (req, res) => {
         })
     }
 }
+
+exports.college_register = async (req, res) => {
+  try {
+    
+    const { name, email, password, emailDomain, collegeRepresentatives } = req.body;
+
+    const existingCollege = await College.findOne({ email });
+
+    if (existingCollege) {
+      return res.status(400).json({
+        success: false,
+        message: "College Already Registered",
+      });
+    }
+
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, 10);
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Error in hashing password",
+      });
+    }
+
+    let hashedRepresentatives = [];
+    if (collegeRepresentatives && collegeRepresentatives.length > 0) {
+      for (let rep of collegeRepresentatives) {
+        const hashedRepPassword = await bcrypt.hash(rep.password, 10);
+        hashedRepresentatives.push({
+          ...rep,
+          password: hashedRepPassword,
+        });
+      }
+    }
+
+    const college = await College.create({
+      name,
+      email,
+      password: hashedPassword,
+      emailDomain,
+      collegeRepresentatives: hashedRepresentatives,
+    });
+
+
+    if (collegeRepresentatives && collegeRepresentatives.length > 0) {
+        const representatives = await Promise.all(collegeRepresentatives.map(async (rep) => ({
+          repId: rep.repId,
+          password: await bcrypt.hash(rep.password, 10),
+          collegeId: college._id,
+        })));
+  
+        await CollegeRep.insertMany(representatives);
+      }
+
+
+    return res.status(200).json({
+      success: true,
+      message: "College Registered Successfully",
+      data: college,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "College registration failed. Please try again later.",
+    });
+  }
+};
+
 
 // Login
 exports.login = async (req,res) => {
