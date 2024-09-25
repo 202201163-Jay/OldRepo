@@ -7,11 +7,13 @@ import {Student_Register} from './Pages/Student/Stu_Reg';
 import {Home} from './Pages/Home/Home';
 import { Login } from './Pages/Home/Login';
 import { Blogs } from './Pages/Home/Blogs';
+import {AuthProvider} from './context/AuthProvider';
 
 export const App = () => {
   return (
     <>
     <Router>
+      <AuthProvider>
       <Routes>
         <Route path='/login' element={<Login/>}></Route>
         <Route path='/blogs' element={<Blogs/>}></Route>
@@ -21,6 +23,7 @@ export const App = () => {
         <Route path="/student-register" element={<Student_Register/>} />
         <Route path="/" element={<Home/>} />
       </Routes>
+      </AuthProvider>
     </Router>
     </>
   );

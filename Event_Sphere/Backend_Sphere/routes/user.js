@@ -8,7 +8,7 @@ const { loginAsCollege, loginAsUser } = require("../Controller/LogAuth");
 router.route("/student-register").post(student_register);
 router.route("/college-register").post(college_register);
 
-router.post('/college/login', loginAsCollege);
-router.post('/user/login', loginAsUser);
+router.route('/college-login').post(loginAsCollege);
+router.route('/student-login').post(loginAsUser);
 
 module.exports = router;

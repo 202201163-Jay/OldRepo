@@ -1,7 +1,7 @@
 const College = require('../Models/College');
 const CollegeRep = require('../Models/CollegeRep');
 const User = require('../Models/User');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 // JWT Secret Key
@@ -37,7 +37,7 @@ exports.loginAsCollege = async (req, res) => {
 
         if (await bcrypt.compare(password, collegeRep.password)) {
             // Password match
-            let token = jwt.sign(payload, process.env.JWT_SECRET, {
+            let token = jwt.sign(payload, JWT_SECRET, {
                 expiresIn: "2h",
             });
 
@@ -76,7 +76,6 @@ exports.loginAsUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Check if both email and password are provided
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -84,49 +83,20 @@ exports.loginAsUser = async (req, res) => {
             });
         }
 
-        // Check if the user exists in User schema
-        let user = await User.findOne({ email });
-        if (!user) {
+        const userExist = await User.findOne({ email });
+        if (!userExist) {
             return res.status(401).json({
                 success: false,
                 message: "User does not exist",
             });
         }
-
-        // Verify password and generate JWT token
-        const payload = {
-            email: user.email,
-            id: user._id,
-            role: user.role,
-        };
-
-        if (await bcrypt.compare(password, user.password)) {
-            // Password match
-            let token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: "2h",
-            });
-
-            user = user.toObject();
-            user.token = token;
-            user.password = undefined; // Hide password
-
-            const options = {
-                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days expiration
-                httpOnly: true,
-            };
-
-            res.cookie("token", token, options).status(200).json({
-                success: true,
-                token,
-                user,
-                message: "User logged in successfully",
-            });
-        } else {
-            // Password does not match
-            return res.status(403).json({
-                success: false,
-                message: "Password does not match",
-            });
+        const isPasswordvalid = await userExist.comparePassword(password)
+        if(isPasswordvalid){
+            const token = await userExist.generateToken()
+            return res.status(200).json({message: "Login Successful!!", token, userId: userExist._id.toString()})
+        }
+        else{
+            return res.status(401).json({message: "Invalid email or password"})
         }
     } catch (err) {
         console.error(err);
