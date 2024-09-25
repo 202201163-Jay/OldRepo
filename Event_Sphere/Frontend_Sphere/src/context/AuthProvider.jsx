@@ -1,24 +1,29 @@
-import React, { createContext, useContext, useState, useEffect} from "react";
+import { createContext, useContext, useState, useEffect} from "react";
 
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"))
-  const authorizationToken = `Bearer${token}`
+  const [username, setUserName] = useState("")
+  const authorizationToken = `Bearer ${token}`
 
-  const storeTokenInLs = (serverToken) => {
+  const storeTokenInLs = (serverToken, name) => {
     setToken(serverToken)
+    setUserName(name)
     localStorage.setItem("token", serverToken)
   }
 
   const isLoggedIn = !!token
+  const [isCollegeRepresentative, setIsCollegeRepresentative] = useState(false)
 
-  const LogoutUser = () => {
+  const Logout = () => {
     setToken("")
+    setUserName("")
+    setIsCollegeRepresentative(false)
     localStorage.removeItem("token")
   }
 
   return (
-    <AuthContext.Provider value={[isLoggedIn, storeTokenInLs, LogoutUser, authorizationToken]}>
+    <AuthContext.Provider value={{isLoggedIn, storeTokenInLs, Logout, authorizationToken, isCollegeRepresentative, setIsCollegeRepresentative, username}}>
       {children}
     </AuthContext.Provider>
   );
