@@ -1,7 +1,3 @@
-Backend_Sphere/node_modules
-Frontend_Sphere/node_modules
-Backend_Sphere/.env
-Frontend_Sphere/.env
 # Logs
 logs
 *.log
