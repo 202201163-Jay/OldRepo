@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthProvider';
 
 export const Col_Login = () => {
   const [collegeRep, setCollegeRep] = useState({
@@ -7,7 +8,14 @@ export const Col_Login = () => {
     password: "",
   });
 
+
+  const {storeTokenInLs} = useAuth()
+  const {isCollegeRepresentative, setIsCollegeRepresentative} = useAuth()
   const navigate = useNavigate();
+
+  const toggle = () => {
+    setIsCollegeRepresentative(prev => !prev)
+  }
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -26,6 +34,12 @@ export const Col_Login = () => {
       if (response.ok) {
         alert("Login Successful !!");
         const responseData = await response.json();
+        storeTokenInLs(responseData.token, collegeRep.name)
+        toggle()
+        // swapped()
+        
+        // isCollegeRepresentative = true
+        // console.log(isCollegeRepresentative)
         console.log(responseData);
         navigate("/");  // Redirect to home or dashboard after successful login
       } else if (response.status === 401 || response.status === 403) {

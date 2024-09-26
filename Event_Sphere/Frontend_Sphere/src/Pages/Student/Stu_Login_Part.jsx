@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-
+import { useAuth } from '../../context/AuthProvider';
 
 export const Stu_Login = () => {
   
@@ -10,6 +10,8 @@ export const Stu_Login = () => {
     password: "",
   })
 
+
+  const {storeTokenInLs} = useAuth()
   const navigate = useNavigate()
 
   const handleInput = (e) => {
@@ -29,7 +31,8 @@ export const Stu_Login = () => {
       if(response.ok){
         alert("Login Successful !!")
         const responsedata = await response.json()
-        console.log(responsedata)
+        storeTokenInLs(responsedata.token, responsedata.name)
+        console.log(responsedata.name)
         navigate("/")
       }
       else if(response.status === 401){

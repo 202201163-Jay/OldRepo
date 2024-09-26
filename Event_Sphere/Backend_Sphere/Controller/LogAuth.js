@@ -28,40 +28,13 @@ exports.loginAsCollege = async (req, res) => {
             });
         }
 
-        // Verify password and generate JWT token
-        const payload = {
-            email: collegeRep.repId,
-            id: collegeRep._id,
-            collegeId: collegeRep.collegeId._id,
-        };
-
-        if (await bcrypt.compare(password, collegeRep.password)) {
-            // Password match
-            let token = jwt.sign(payload, JWT_SECRET, {
-                expiresIn: "2h",
-            });
-
-            collegeRep = collegeRep.toObject();
-            collegeRep.token = token;
-            collegeRep.password = undefined; // Hide password
-
-            const options = {
-                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days expiration
-                httpOnly: true,
-            };
-
-            res.cookie("token", token, options).status(200).json({
-                success: true,
-                token,
-                collegeRep,
-                message: "College representative logged in successfully",
-            });
-        } else {
-            // Password does not match
-            return res.status(403).json({
-                success: false,
-                message: "Password does not match",
-            });
+        const isPasswordvalid = await collegeRep.comparePassword(password)
+        if(isPasswordvalid){
+            const token = await collegeRep.generateToken()
+            return res.status(200).json({message: "College representative logged in successfully", token, userId: collegeRep._id.toString()})
+        }
+        else{
+            return res.status(401).json({message: "Invalid email or password"})
         }
     } catch (err) {
         console.error(err);
@@ -84,6 +57,7 @@ exports.loginAsUser = async (req, res) => {
         }
 
         const userExist = await User.findOne({ email });
+        const name = userExist.name
         if (!userExist) {
             return res.status(401).json({
                 success: false,
@@ -93,7 +67,7 @@ exports.loginAsUser = async (req, res) => {
         const isPasswordvalid = await userExist.comparePassword(password)
         if(isPasswordvalid){
             const token = await userExist.generateToken()
-            return res.status(200).json({message: "Login Successful!!", token, userId: userExist._id.toString()})
+            return res.status(200).json({message: "User Login Successful!!", token, name, userId: userExist._id.toString()})
         }
         else{
             return res.status(401).json({message: "Invalid email or password"})

@@ -39,6 +39,7 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.generateToken = async function () {
   try {
       return jwt.sign({
+          name: this.name,
           userId: this._id.toString(),
           email: this.email,
       }, "Smit", {
