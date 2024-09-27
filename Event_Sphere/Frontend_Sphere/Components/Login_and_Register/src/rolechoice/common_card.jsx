@@ -1,4 +1,6 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
+import './rolechoice.scss'
 
 function Card({role}) {
 
@@ -18,9 +20,9 @@ function Card({role}) {
                 possimus sunt voluptatem eius perspiciatis quos inventore quae. 
                 Officia, accusamus odit!</h4>
 
-                <a href={loginHref}><button>Log In</button></a>
+                <Link to={loginHref}><button>Log In</button></Link>
 
-                <h3>Don't have an account? <a href={registerHref}>Sign Up</a></h3>
+                <h3>Don't have an account? <Link to={registerHref}>Sign Up</Link></h3>
         </div>
     </>
   )

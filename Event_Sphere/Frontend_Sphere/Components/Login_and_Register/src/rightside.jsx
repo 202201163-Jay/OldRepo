@@ -1,7 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom';
 // import './loginstyle.scss'
 
-function Rightside({role,name}) {
+function Rightside() {
+
+  const [user,setUser] = useState({
+    email : "",
+    password : ""
+  })
+
+  const handleInput = (e) => {
+
+    e.preventDefault();
+
+    let name = e.target.name;
+    let value = e.target.value;
+
+    setUser({
+      ...user,
+      [name] : value
+    })
+
+  }
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+
+    console.log(user);
+    
+    setUser({
+      username : "",
+      email : "",
+      password : ""
+    })
+  }
+
   return (
     <>
        <div className="main-container">
@@ -13,15 +47,34 @@ function Rightside({role,name}) {
         </div>
 
         <div className="login-box">
-           <form onSubmit="">
-           <input type="text" placeholder='Your email' id="" required/>
-            <input type="text" placeholder='Your Password' id=""  required/>
+
+           <form onSubmit={handleSubmit}>
+           <input 
+           type='email'
+           placeholder='Your username or email' 
+           name='email'
+           id='email'
+           required
+           value={user.email}
+           onChange={handleInput}
+           />
+
+            <input 
+            type="password"
+            placeholder='Your password' 
+            name='password'
+            id="password" 
+            required
+            value={user.password}
+            onChange={handleInput}
+            />
+
             <button type='submit'>Log In</button>
            </form>
         </div>
 
         <div className="lower-login">
-        <h3>Don't have an account? <a href="/register">Sign Up</a></h3>
+        <h3>Don't have an account? <Link to="/register">Sign Up</Link></h3>
         </div>
 
        </div>
