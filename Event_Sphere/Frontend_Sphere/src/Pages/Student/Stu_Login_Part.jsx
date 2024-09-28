@@ -27,7 +27,7 @@ export const Stu_Login = () => {
         headers : {"Content-Type" : "application/json"},
         body : JSON.stringify(user),
       })
-
+      console.log(response)
       if(response.ok){
         alert("Login Successful !!")
         const responsedata = await response.json()
