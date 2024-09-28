@@ -40,13 +40,35 @@ export const Stu_Reg = () => {
 
   // Submit signup form
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Logic for signup here (if necessary)
-      setIsSignedUp(true);
-    } catch (err) {
-      setError('Signup failed. Please try again.');
-    }
+    // e.preventDefault();
+    // try {
+      e.preventDefault()
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/student-register", {
+          method: "POST",
+          headers: {"Content-Type" : "application/json",},
+          body: JSON.stringify(formData),
+        })
+
+        if(response.ok){
+          const responsedata = await response.json()
+          setFormData({
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+          })
+          console.log(responsedata)
+          navigate("/")
+        }
+
+      } catch (error) {
+        console.log(error)
+      }
+    //   setIsSignedUp(true);
+    // } catch (error) {
+    //   setError('Signup failed. Please try again.');
+    // }
   };
 
   // Submit domain and email for OTP generation
@@ -97,7 +119,7 @@ export const Stu_Reg = () => {
         const data = await response.json();
         setError(data.message || 'OTP verification failed');
       }
-    } catch (err) {
+    } catch (error) {
       setError('An error occurred during OTP verification');
     }
   };
